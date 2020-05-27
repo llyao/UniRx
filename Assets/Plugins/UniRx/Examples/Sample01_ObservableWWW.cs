@@ -15,17 +15,23 @@ namespace UniRx.Examples
         {
             // Basic: Download from google.
             {
-                ObservableWWW.Get("http://google.co.jp/")
+                //ObservableWWW.Get("http://google.co.jp/")
+                //    .Subscribe(
+                //        x => Debug.Log(x.Substring(0, 100)), // onSuccess
+                //        ex => Debug.LogException(ex)); // onError
+                ObservableWWW.Get("http://www.baidu.com/")
                     .Subscribe(
                         x => Debug.Log(x.Substring(0, 100)), // onSuccess
                         ex => Debug.LogException(ex)); // onError
+
+                
             }
 
             // Linear Pattern with LINQ Query Expressions
             // download after google, start bing download
             {
-                var query = from google in ObservableWWW.Get("http://google.com/")
-                            from bing in ObservableWWW.Get("http://bing.com/")
+                var query = from google in ObservableWWW.Get("http://www.baidu.com/")
+                            from bing in ObservableWWW.Get("http://www.baidu.com/")
                             select new { google, bing };
 
                 var cancel = query.Subscribe(x => Debug.Log(x.google.Substring(0, 100) + ":" + x.bing.Substring(0, 100)));
@@ -38,9 +44,9 @@ namespace UniRx.Examples
             // (It's like Observable.Zip but specialized for single async operations like Task.WhenAll of .NET 4)
             {
                 var parallel = Observable.WhenAll(
-                    ObservableWWW.Get("http://google.com/"),
-                    ObservableWWW.Get("http://bing.com/"),
-                    ObservableWWW.Get("http://unity3d.com/"));
+                    ObservableWWW.Get("http://www.baidu.com/"),
+                    ObservableWWW.Get("http://www.baidu.com/"),
+                    ObservableWWW.Get("http://www.baidu.com/"));
 
                 parallel.Subscribe(xs =>
                 {
@@ -57,14 +63,14 @@ namespace UniRx.Examples
                 progressNotifier.Subscribe(x => Debug.Log(x)); // write www.progress
 
                 // pass notifier to WWW.Get/Post
-                ObservableWWW.Get("http://google.com/", progress: progressNotifier).Subscribe();
+                ObservableWWW.Get("http://www.baidu.com/", progress: progressNotifier).Subscribe();
             }
 
             // with Error
             {
                 // If WWW has .error, ObservableWWW throws WWWErrorException to onError pipeline.
                 // WWWErrorException has RawErrorMessage, HasResponse, StatusCode, ResponseHeaders
-                ObservableWWW.Get("http://www.google.com/404")
+                ObservableWWW.Get("http://www.baidu.com/")
                     .CatchIgnore((WWWErrorException ex) =>
                     {
                         Debug.Log(ex.RawErrorMessage);
